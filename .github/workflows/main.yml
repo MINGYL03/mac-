@@ -1,0 +1,37 @@
+name: build macOS app
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install pillow pyinstaller
+
+      - name: Build macOS app
+        run: |
+          python3 -m PyInstaller --windowed --name "批量加Logo工具" logo_batch_gui.py
+
+      - name: Zip app
+        run: |
+          cd dist
+          zip -r "批量加Logo工具-macOS.zip" "批量加Logo工具.app"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LogoBatchTool-macOS
+          path: dist/批量加Logo工具-macOS.zip
